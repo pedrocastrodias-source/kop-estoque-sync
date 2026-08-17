@@ -2,9 +2,9 @@ name: Sincronizar Estoque Cisslive → Supabase
 
 on:
   schedule:
-    # Roda a cada hora das 8h às 20h (Brasília), segunda a sábado
+    # Roda a cada 30 minutos das 8h às 20h (Brasília), segunda a sábado
     # BRT = UTC-3, então 8h BRT = 11h UTC, 20h BRT = 23h UTC
-    - cron: '0 11-23 * * 1-6'
+    - cron: '0,30 11-23 * * 1-6'
   workflow_dispatch:
     # Permite execução manual pelo painel do GitHub
 
