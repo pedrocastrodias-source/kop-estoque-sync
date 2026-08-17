@@ -1,0 +1,46 @@
+name: Sincronizar Estoque Cisslive → Supabase
+
+on:
+  schedule:
+    # Roda a cada hora das 8h às 20h (Brasília), segunda a sábado
+    # BRT = UTC-3, então 8h BRT = 11h UTC, 20h BRT = 23h UTC
+    - cron: '0 11-23 * * 1-6'
+  workflow_dispatch:
+    # Permite execução manual pelo painel do GitHub
+
+jobs:
+  sync-estoque:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: 📦 Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: 🌐 Instalar navegador Playwright (Chromium)
+        run: playwright install chromium --with-deps
+
+      - name: 🚀 Executar sincronização do estoque
+        env:
+          CISSLIVE_USERNAME: ${{ secrets.CISSLIVE_USERNAME }}
+          CISSLIVE_PASSWORD: ${{ secrets.CISSLIVE_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python scripts/ciss_automation.py
+
+      - name: 📸 Salvar screenshots (em caso de falha)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-debug-${{ github.run_number }}
+          path: screenshots/
+          retention-days: 7
