@@ -12,15 +12,10 @@ jobs:
   sync-estoque:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: write
 
     steps:
       - name: 📥 Checkout do código
         uses: actions/checkout@v4
-
-      - name: 🔄 Manter workflow ativo (previne desativação por inatividade de 60 dias)
-        uses: gautamkrishnar/keepalive-workflow@v2
 
       - name: 🐍 Configurar Python 3.13
         uses: actions/setup-python@v5
